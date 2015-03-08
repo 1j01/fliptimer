@@ -13,7 +13,7 @@
 	}
 	.timer input { text-align: center; font-size: 5em; }
 	.error input { color: red; }
-	.alarm input { color: yellow; background: black; }
+	.alarm input { color: yellow; background: rgb(215, 57, 102); }
 	.timer::after {
 		content: "";
 		display: block;
@@ -47,35 +47,52 @@
 	after = (ms, fn)-> tid = setTimeout fn, ms; stop: -> clearTimeout tid
 	every = (ms, fn)-> iid = setInterval fn, ms; stop: -> clearInterval iid
 	
+	debug = (args...)-> console?.debug? args...
+	
 	class Countdown
 		constructor: ->
+			every 150, =>
+				status = if @interval then "running" else if @paused then "paused" else "stopped"
+				console.info "Status: #{status}, elapsed: #{@elapsed_seconds}s / #{@total_seconds}s"
+				if @paused and @interval
+					console.warn "Paused while running!"
+			
 			@total_seconds = 0
 			@elapsed_seconds = 0
 			@paused = no
 			
 			@el = ($ "<div class=timer>").appendTo "body"
-			@input = ($ "<input class=time type=text autofocus>").appendTo @el
+			@input = ($ "<input class=time type=text>").appendTo @el
+			@input.focus()
 			
 			($ window).on "keydown", (e)=>
 				console.log e.keyCode
 				unless document.activeElement.tagName.match /input|textarea/i
+					console.log "(no textarea active)"
 					if e.keyCode in [13, 32] # enter, space
 						if @paused or @elapsed_seconds is 0
-							@start()
+							if @isAt0()
+								@reset()
+							else
+								@start()
 						else
-							@stop()
+							@pause()
+					if e.keyCode in [8] # backspace
+						@input.focus()
 			
 			@input.on "keydown", (e)=>
-				start = not @iid?
+				start = not @interval?
 				return if e.ctrlKey or e.altKey or e.shiftKey
 				@pause()
 				@el.removeClass "error alarm"
 				if e.keyCode is 13
 					e.preventDefault()
-					total_time = @input.val() ? location.hash
-					if total_time in ["0", ""]
-						@set location.hash
-					else if start
+					
+					# if @isAt0()
+					# 	@set location.hash
+					# else
+					if start
+						total_time = @input.val() ? location.hash
 						try
 							@set total_time
 							@start()
@@ -91,14 +108,27 @@
 		
 		set: (total_time)->
 			@stop()
+			debug "SET!", total_time
+			@el.removeClass "error alarm"
+			@elapsed_seconds = 0
+			
 			if typeof total_time is "number"
 				@total_seconds = total_time
 			else
 				@total_seconds = juration.parse total_time
+			
 			@update()
+			
+			@input.blur()
+			@input.on "focus", (e)=>
+				if @isAt0()
+					@reset()
+				else
+					@pause()
 		
 		start: ->
 			@stop()
+			debug "START!"
 			started_seconds = @elapsed_seconds
 			started_time = Date.now()
 			@interval = every 30, =>
@@ -110,22 +140,30 @@
 			@el.addClass "running"
 		
 		pause: ->
+			debug "PAUSE!"
 			@paused = yes
 			@interval?.stop()
 			@interval = null
-			@el.removeClass "running"
+			@el.removeClass "running alarm"
 		
 		stop: ->
 			@pause()
-			@elapsed_seconds = 0
+			debug "STOP!"
 			@paused = no
+		
+		reset: ->
+			@set location.hash
 		
 		alarm: ->
 			@stop()
+			@elapsed_seconds = 0
 			@input.val "0"
 			@el.addClass "alarm"
 			# TODO: sound
 			# TODO: desktop notification
+		
+		isAt0: ->
+			@input.val() in ["0", ""]
 	
 	c = new Countdown
 	
