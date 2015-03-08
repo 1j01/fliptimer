@@ -82,7 +82,7 @@
 			@paused = no
 			
 			@audio = new Audio
-			@audio.src = "audio/church-bells-and-birds.mp3"
+			@audio.src = "audio/breeeewrrwrrrrhrrmnyarrerew.mp3"
 			
 			@el = ($ "<div class=timer>").appendTo "body"
 			@input = ($ "<input class=time type=text>").appendTo @el
@@ -189,13 +189,14 @@
 			
 			@el.addClass "alarm"
 			
+			@audio.play()
+			
 			if Notification.permission is "granted"
 				@notification = new Notification "Hey!", body: "The timer's up!"
 				@notification.onclick = @notification.onclose = => @reset()
 			else
 				alert "Hey! The timer's up!"
-			
-			@audio.play()
+				@reset()
 		
 		isAt0: ->
 			@input.val() in ["0", ""]
