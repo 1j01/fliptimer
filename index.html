@@ -154,7 +154,8 @@
 					@reset()
 				else
 					@pause()
-			
+					
+			Notification.requestPermission()
 			@stop_alarm()
 		
 		start: ->
@@ -202,7 +203,6 @@
 				@reset()
 		
 		stop_alarm: ->
-			Notification.requestPermission()
 			@notification?.close()
 			@audio.pause()
 			@audio.currentTime = 0
