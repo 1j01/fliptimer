@@ -3,11 +3,39 @@
 <title>Countdown</title>
 <meta name="viewport" content="width=device-width">
 <style>
-	* { padding: 0; margin: 0; border: 0; width: 100%; height: 100%; vertical-align: bottom; }
-	.timer { text-align: center; font-size: 5em; }
-	.error { color: red; }
-	.alarm { color: yellow; background: black; }
-	/*.running { display: block; position: absolute; bottom: 0; height: 1em; background: lime; }*/
+	* {
+		padding: 0;
+		margin: 0;
+		border: 0;
+		width: 100%;
+		height: 100%;
+		vertical-align: bottom;
+	}
+	.timer input { text-align: center; font-size: 5em; }
+	.error input { color: red; }
+	.alarm input { color: yellow; background: black; }
+	.timer::after {
+		content: "";
+		display: block;
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		height: 1in;
+		pointer-events: none;
+		background: rgb(255, 243, 188);
+	}
+	.timer.running::after {
+		background: rgb(0, 243, 188);
+	}
+	.timer.alarm.alarm::after {
+		background: yellow;
+	}
+	* {
+		transition: all .2s ease-in-out;
+	}
+	*::after {
+		transition: all .1s ease-in-out;
+	}
 </style>
 
 <script src="lib/jquery-2.1.3.min.js"></script>
@@ -22,22 +50,22 @@
 			@elapsed_seconds = 0
 			@started_seconds = 0
 			@started_time = 0
-			@el = ($ "<input class=timer type=text>").appendTo "body"
-			@el.on "keydown", (e)=>
+			@el = ($ "<div class=timer>").appendTo "body"
+			@input = ($ "<input class=time type=text>").appendTo @el
+			@input.on "keypress", (e)=>
 				start = not @iid?
 				@stop()
 				@el.removeClass "error alarm"
 				if e.keyCode is 13
 					e.preventDefault()
-					if start
+					total_time = @input.val() ? location.hash
+					if total_time in ["0", ""]
+						@set location.hash
+					else if start
 						try
-							total_time = @el.val() ? location.hash
-							if total_time in ["0", ""]
-								@set location.hash
-							else
-								@set total_time
-								@start()
-								location.hash = total_time
+							@set total_time
+							@start()
+							location.hash = total_time
 						catch e
 							@el.addClass "error"
 							console?.error? e
@@ -45,8 +73,8 @@
 			
 		update: ->
 			text = juration.stringify @total_seconds - @elapsed_seconds
-			@el.val text
-			@el.css fontSize: @el.width() / 10
+			@input.val text
+			@input.css fontSize: @el.width() / 10
 		
 		set: (total_time)->
 			@stop()
@@ -64,11 +92,11 @@
 				@elapsed_seconds = (Date.now() - @started_time) / 1000 + @started_seconds
 				if @elapsed_seconds >= @total_seconds
 					@stop()
-					@el.val 0
+					@input.val 0
 					@el.addClass "alarm"
 				else
 					@update()
-			, 150
+			, 30
 			@el.addClass "running"
 		
 		stop: ->
