@@ -44,19 +44,31 @@
 
 <script type="text/coffeescript">
 	
+	after = (ms, fn)-> tid = setTimeout fn, ms; stop: -> clearTimeout tid
+	every = (ms, fn)-> iid = setInterval fn, ms; stop: -> clearInterval iid
+	
 	class Countdown
 		constructor: ->
 			@total_seconds = 0
 			@elapsed_seconds = 0
-			@started_seconds = 0
-			@started_time = 0
+			@paused = no
+			
 			@el = ($ "<div class=timer>").appendTo "body"
 			@input = ($ "<input class=time type=text autofocus>").appendTo @el
+			
+			($ window).on "keydown", (e)=>
+				console.log e.keyCode
+				unless document.activeElement.tagName.match /input|textarea/i
+					if e.keyCode in [13, 32] # enter, space
+						if @paused or @elapsed_seconds is 0
+							@start()
+						else
+							@stop()
 			
 			@input.on "keydown", (e)=>
 				start = not @iid?
 				return if e.ctrlKey or e.altKey or e.shiftKey
-				@stop()
+				@pause()
 				@el.removeClass "error alarm"
 				if e.keyCode is 13
 					e.preventDefault()
@@ -87,27 +99,33 @@
 		
 		start: ->
 			@stop()
-			@started_seconds = @elapsed_seconds
-			@started_time = Date.now()
-			@iid = setInterval =>
-				@elapsed_seconds = (Date.now() - @started_time) / 1000 + @started_seconds
+			started_seconds = @elapsed_seconds
+			started_time = Date.now()
+			@interval = every 30, =>
+				@elapsed_seconds = (Date.now() - started_time) / 1000 + started_seconds
 				if @elapsed_seconds >= @total_seconds
-					@stop()
-					@input.val 0
-					@el.addClass "alarm"
+					@alarm()
 				else
 					@update()
-			, 30
 			@el.addClass "running"
 		
-		stop: ->
-			@elapsed_seconds = 0
-			@started_seconds = 0
-			@started_time = 0
-			clearInterval @iid
-			@iid = null
+		pause: ->
+			@paused = yes
+			@interval?.stop()
+			@interval = null
 			@el.removeClass "running"
-	
+		
+		stop: ->
+			@pause()
+			@elapsed_seconds = 0
+			@paused = no
+		
+		alarm: ->
+			@stop()
+			@input.val "0"
+			@el.addClass "alarm"
+			# TODO: sound
+			# TODO: desktop notification
 	
 	c = new Countdown
 	
