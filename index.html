@@ -49,6 +49,8 @@
 	
 	debug = (args...)-> console?.debug? args...
 	
+	Notification = window.Notification ? window.mozNotification ? window.webkitNotification
+	
 	class Countdown
 		constructor: ->
 			every 150, =>
@@ -66,9 +68,9 @@
 			@input.focus()
 			
 			($ window).on "keydown", (e)=>
-				console.log e.keyCode
+				debug e.keyCode
 				unless document.activeElement.tagName.match /input|textarea/i
-					console.log "(no textarea active)"
+					debug "(no textarea active)"
 					if e.keyCode in [13, 32] # enter, space
 						if @paused or @elapsed_seconds is 0
 							if @isAt0()
@@ -125,6 +127,9 @@
 					@reset()
 				else
 					@pause()
+			
+			Notification.requestPermission()
+			@notification?.close()
 		
 		start: ->
 			@stop()
@@ -159,8 +164,12 @@
 			@elapsed_seconds = 0
 			@input.val "0"
 			@el.addClass "alarm"
+			if Notification.permission is "granted"
+				@notification = new Notification "Hey!", body: "The timer's up!"
+				@notification.onclick = @notification.onclose = => @reset()
+			else
+				alert "Hey! The timer's up!"
 			# TODO: sound
-			# TODO: desktop notification
 		
 		isAt0: ->
 			@input.val() in ["0", ""]
