@@ -3,7 +3,7 @@
 <title>Countdown</title>
 <meta name="viewport" content="width=device-width">
 <style>
-	* {
+	html, body, .timer, .time {
 		padding: 0;
 		margin: 0;
 		border: 0;
@@ -11,16 +11,22 @@
 		height: 100%;
 		vertical-align: bottom;
 	}
-	.timer input {
+	.time {
 		text-align: center;
 		font-size: 5em;
+		font-family: sans-serif;
+		border: 0;
+		resize: none;
+		background: inherit;
 	}
-	.error input {
+	.error .time {
 		color: red;
 	}
-	.alarm input {
-		color: yellow;
+	.alarm {
 		background: rgb(215, 57, 102);
+	}
+	.alarm .time {
+		color: yellow;
 		animation: alarm 1s ease-out infinite;
 		-webkit-animation: alarm 1s ease-out infinite;
 	}
@@ -37,7 +43,7 @@
 	.timer.running::after {
 		background: rgb(0, 243, 188);
 	}
-	.timer.alarm.alarm::after {
+	.timer.alarm::after {
 		background: yellow;
 	}
 	* {
@@ -85,7 +91,8 @@
 			@audio.src = "audio/breeeewrrwrrrrhrrmnyarrerew.mp3"
 			
 			@el = ($ "<div class=timer>").appendTo "body"
-			@input = ($ "<input class=time type=text>").appendTo @el
+			#@input = ($ "<textarea rows=1 class=time>").appendTo @el
+			@input = ($ "<input class=time>").appendTo @el
 			@input.focus()
 			
 			($ window).on "keydown", (e)=>
@@ -94,7 +101,7 @@
 					debug "(no textarea active)"
 					if e.keyCode in [13, 32] # enter, space
 						if @paused or @elapsed_seconds is 0
-							if @isAt0()
+							if @isTimeUp()
 								@reset()
 							else
 								@start()
@@ -104,17 +111,16 @@
 						@input.focus()
 			
 			@input.on "keydown", (e)=>
-				start = not @interval?
 				return if e.ctrlKey or e.altKey or e.shiftKey
+				
+				was_running = @interval?
 				@pause()
+				
 				@el.removeClass "error alarm"
+				
 				if e.keyCode is 13
 					e.preventDefault()
-					
-					# if @isAt0()
-					# 	@set location.hash
-					# else
-					if start
+					unless was_running
 						total_time = @input.val() ? location.hash
 						try
 							@set total_time
@@ -144,15 +150,12 @@
 			
 			@input.blur()
 			@input.on "focus", (e)=>
-				if @isAt0()
+				if @isTimeUp()
 					@reset()
 				else
 					@pause()
 			
-			Notification.requestPermission()
-			@notification?.close()
-			@audio.pause()
-			@audio.currentTime = 0
+			@stop_alarm()
 		
 		start: ->
 			@stop()
@@ -198,7 +201,13 @@
 				alert "Hey! The timer's up!"
 				@reset()
 		
-		isAt0: ->
+		stop_alarm: ->
+			Notification.requestPermission()
+			@notification?.close()
+			@audio.pause()
+			@audio.currentTime = 0
+		
+		isTimeUp: ->
 			@input.val() in ["0", ""]
 	
 	c = new Countdown
