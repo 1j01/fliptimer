@@ -11,9 +11,19 @@
 		height: 100%;
 		vertical-align: bottom;
 	}
-	.timer input { text-align: center; font-size: 5em; }
-	.error input { color: red; }
-	.alarm input { color: yellow; background: rgb(215, 57, 102); }
+	.timer input {
+		text-align: center;
+		font-size: 5em;
+	}
+	.error input {
+		color: red;
+	}
+	.alarm input {
+		color: yellow;
+		background: rgb(215, 57, 102);
+		animation: alarm 1s ease-out infinite;
+		-webkit-animation: alarm 1s ease-out infinite;
+	}
 	.timer::after {
 		content: "";
 		display: block;
@@ -35,6 +45,14 @@
 	}
 	*::after {
 		transition: all .1s ease-in-out;
+	}
+	@-webkit-keyframes alarm {
+		0% { text-shadow: 0 0 0px yellow; }
+		100% { text-shadow: 0 0 300px rgba(255, 255, 0, 0); }
+	}
+	@keyframes alarm {
+		0% { text-shadow: 0 0 0px yellow; }
+		100% { text-shadow: 0 0 300px rgba(255, 255, 0, 0); }
 	}
 </style>
 
