@@ -44,16 +44,18 @@
 
 <script type="text/coffeescript">
 	
-	class Timer
+	class Countdown
 		constructor: ->
 			@total_seconds = 0
 			@elapsed_seconds = 0
 			@started_seconds = 0
 			@started_time = 0
 			@el = ($ "<div class=timer>").appendTo "body"
-			@input = ($ "<input class=time type=text>").appendTo @el
-			@input.on "keypress", (e)=>
+			@input = ($ "<input class=time type=text autofocus>").appendTo @el
+			
+			@input.on "keydown", (e)=>
 				start = not @iid?
+				return if e.ctrlKey or e.altKey or e.shiftKey
 				@stop()
 				@el.removeClass "error alarm"
 				if e.keyCode is 13
@@ -69,8 +71,7 @@
 						catch e
 							@el.addClass "error"
 							console?.error? e
-
-			
+		
 		update: ->
 			text = juration.stringify @total_seconds - @elapsed_seconds
 			@input.val text
@@ -107,14 +108,14 @@
 			@iid = null
 			@el.removeClass "running"
 	
-	timer = new Timer
-	if location.hash
-		timer.set location.hash
-		timer.start()
 	
-	$(window).on "hashchange", ->
-		timer.set location.hash
-		timer.start()
-		
+	c = new Countdown
+	
+	set_from_hash = ->
+		c.set location.hash
+		c.start()
+	
+	set_from_hash() if location.hash
+	($ window).on "hashchange", set_from_hash
 	
 </script>
