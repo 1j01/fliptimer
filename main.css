@@ -1,0 +1,89 @@
+
+html,
+body,
+.timer,
+.timer > center,
+.time {
+	padding: 0;
+	margin: 0;
+	border: 0;
+	width: 100%;
+	height: 100%;
+	vertical-align: bottom;
+	font-size: 100%;
+	font: inherit;
+	font-family: sans-serif;
+}
+.timer {
+	font-size: 5em;
+}
+.timer.running .input {
+	display: none;
+}
+.timer:not(.running) .countdown { 
+	display: none;
+}
+center {
+	display: table;
+}
+center > * {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+}
+.time {
+	vertical-align: middle;
+	text-align: center;
+	font-size: inherit;
+	border: 0;
+	resize: none;
+	background: inherit;
+}
+.error .time {
+	color: red;
+}
+.alarm {
+	background: rgb(215, 57, 102);
+}
+.alarm .time {
+	color: yellow;
+	animation: alarm 1s ease-out infinite;
+	-webkit-animation: alarm 1s ease-out infinite;
+}
+.timer::after {
+	display: block;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 1in;
+	line-height: 1in;
+	text-align: center;
+	pointer-events: none;
+	background: rgb(255, 243, 188);
+	color: rgba(0, 0, 0, 0.5);
+	content: "e.g. 5 minutes, or 1h45m, or 10s";
+	font-size: 0.3em;
+	/*font-style: italic;*/
+}
+.timer.running::after {
+	content: "";
+	background: rgb(0, 243, 188);
+}
+.timer.alarm::after {
+	content: "";
+	background: yellow;
+}
+* {
+	transition: all .2s ease-in-out;
+}
+*::after {
+	transition: all .1s ease-in-out;
+}
+@-webkit-keyframes alarm {
+	0% { text-shadow: 0 0 0px yellow; }
+	100% { text-shadow: 0 0 300px rgba(255, 255, 0, 0); }
+}
+@keyframes alarm {
+	0% { text-shadow: 0 0 0px yellow; }
+	100% { text-shadow: 0 0 300px rgba(255, 255, 0, 0); }
+}

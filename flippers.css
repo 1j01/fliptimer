@@ -1,0 +1,30 @@
+
+.flipper {
+	display: inline-block;
+	margin: 0.1em;
+}
+.added {
+	-webkit-animation: added 0.2s ease-out;
+}
+.removed {
+	-webkit-animation: removed 0.2s ease-out;
+	opacity: 0;
+}
+@-webkit-keyframes added {
+	0% { -webkit-transform: perspective(300px) translateZ(5px) rotateX(0.25turn); opacity: 0; }
+	100% { -webkit-transform: perspective(300px) rotateX(0turn); opacity: 1; }
+}
+@-webkit-keyframes removed {
+	0% { -webkit-transform: perspective(300px) rotateX(0turn); opacity: 1; }
+	100% { -webkit-transform: perspective(300px) rotateX(0.25turn); opacity: 0; }
+}
+.numerical.flipper {
+	background: rgba(50, 0, 150, 0.05);
+	border: 0.05em solid #58297D;
+	border-radius: 0.1em;
+	padding: 0.1em;
+	/*border-radius: 2px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+	background: rgba(0, 0, 0, 0.01);
+	color: #58297D;*/
+}
