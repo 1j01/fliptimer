@@ -2,23 +2,39 @@
 .flipper {
 	display: inline-block;
 	margin: 0.1em;
+	
+	transition: all .7s ease;
+	transition-property: left, top, opacity;
+	
+	-webkit-perspective: 300px;
+	   -moz-perspective: 300px;
+	    -ms-perspective: 300px;
+	        perspective: 300px;
+	
+	-webkit-perspective-origin: 50% 50%;
+	   -moz-perspective-origin: 50% 50%;
+	    -ms-perspective-origin: 50% 50%;
+	        perspective-origin: 50% 50%;
+	
 }
-.added {
-	-webkit-animation: added 0.2s ease-out;
+.flipper.added {
+	-webkit-animation: added 0.4s ease-out;
+	-webkit-transform-origin: 50% 200%;
 }
-.removed {
-	-webkit-animation: removed 0.2s ease-out;
+.flipper.removed {
+	-webkit-animation: removed 0.4s ease-out;
+	-webkit-transform-origin: 50% -50%;
 	opacity: 0;
 }
 @-webkit-keyframes added {
-	0% { -webkit-transform: perspective(300px) translateZ(5px) rotateX(0.25turn); opacity: 0; }
-	100% { -webkit-transform: perspective(300px) rotateX(0turn); opacity: 1; }
+	0% { -webkit-transform: translateZ(-40px) rotateX(0.25turn); opacity: 0; }
+	100% { -webkit-transform: translateZ(-40px) rotateX(0turn); opacity: 1; }
 }
 @-webkit-keyframes removed {
-	0% { -webkit-transform: perspective(300px) rotateX(0turn); opacity: 1; }
-	100% { -webkit-transform: perspective(300px) rotateX(0.25turn); opacity: 0; }
+	0% { -webkit-transform: translateZ(-40px) rotateX(0turn); opacity: 1; }
+	100% { -webkit-transform: translateZ(-40px) rotateX(0.25turn); opacity: 0; }
 }
-.numerical.flipper {
+.flipper.numerical {
 	background: rgba(50, 0, 150, 0.05);
 	border: 0.05em solid #58297D;
 	border-radius: 0.1em;

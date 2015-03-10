@@ -59,7 +59,7 @@ do ($ = jQuery)->
 					else
 						$new_flipper.appendTo($container)
 					
-					$new_flipper.addClass "added"
+					$new_flipper.addClass "added just-added"
 					
 				$current_flipper
 			
@@ -75,12 +75,21 @@ do ($ = jQuery)->
 				$layed_out_flipper = $layed_out_flippers[i]
 				console.error $flipper.text(), $layed_out_flipper.text() if $flipper.text() isnt $layed_out_flipper.text()
 				# @TODO: allow transitions to occur uninterrupted by checking to see if it needs to move before moving it?
-				$flipper.css
-					left: $layed_out_flipper.position().left
-					top: $layed_out_flipper.position().top
-					width: $layed_out_flipper.width()
-					height: $layed_out_flipper.height()
-				.css
-					position: "absolute"
+				position = (terrible_ox_hax=0)->
+					# @TODO: remove utter hackery
+					# @FIXME: hack only works with margin-left
+					$flipper.css
+						left: $layed_out_flipper.position().left + terrible_ox_hax
+						top: $layed_out_flipper.position().top
+						width: $layed_out_flipper.width()
+						height: $layed_out_flipper.height()
+					.css
+						position: "absolute"
+					
+				if $flipper.hasClass "just-added"
+					$flipper.removeClass "just-added"
+					position($layed_out_flipper.outerWidth()/2+$layed_out_flipper.css("margin-left"))
+				
+				position()
 			
 			$layout.remove()
