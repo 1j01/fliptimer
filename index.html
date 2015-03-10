@@ -16,6 +16,7 @@
 		vertical-align: bottom;
 		font-size: 100%;
 		font: inherit;
+		font-family: sans-serif;
 	}
 	.timer {
 		font-size: 5em;
@@ -37,7 +38,6 @@
 	.time {
 		vertical-align: middle;
 		text-align: center;
-		font-family: sans-serif;
 		font-size: inherit;
 		border: 0;
 		resize: none;
@@ -55,19 +55,26 @@
 		-webkit-animation: alarm 1s ease-out infinite;
 	}
 	.timer::after {
-		content: "";
 		display: block;
 		position: absolute;
 		bottom: 0;
 		width: 100%;
 		height: 1in;
+		line-height: 1in;
+		text-align: center;
 		pointer-events: none;
 		background: rgb(255, 243, 188);
+		color: rgba(0, 0, 0, 0.5);
+		content: "e.g. 5 minutes, or 1h45m, or 10s";
+		font-size: 0.3em;
+		/*font-style: italic;*/
 	}
 	.timer.running::after {
+		content: "";
 		background: rgb(0, 243, 188);
 	}
 	.timer.alarm::after {
+		content: "";
 		background: yellow;
 	}
 	* {
@@ -84,9 +91,6 @@
 		0% { text-shadow: 0 0 0px yellow; }
 		100% { text-shadow: 0 0 300px rgba(255, 255, 0, 0); }
 	}
-	/** {
-		box-sizing: border-box;
-	}*/
 	.flipper {
 		display: inline-block;
 		margin: 0.1em;
@@ -107,6 +111,7 @@
 		100% { -webkit-transform: perspective(300px) rotateX(0.25turn); opacity: 0; }
 	}
 	.numerical.flipper {
+		background: rgba(50, 0, 150, 0.05);
 		border: 0.05em solid #58297D;
 		border-radius: 0.1em;
 		padding: 0.1em;
@@ -193,8 +198,6 @@
 						total_time = @input.val() ? location.hash
 						if total_time is "0" and location.hash isnt "0"
 							@reset()
-							# after 60, =>
-							# 	@input.focus()
 						else
 							try
 								@set total_time
@@ -222,8 +225,6 @@
 			
 			@update()
 			
-			# @input.blur()
-					
 			Notification.requestPermission()
 			@stop_alarm()
 		
