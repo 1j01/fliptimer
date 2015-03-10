@@ -267,7 +267,9 @@
 			@audio.play()
 			
 			if Notification.permission is "granted"
-				@notification = new Notification "Hey!", body: "The timer's up!"
+				@notification = new Notification "Hey!",
+					body: "The timer's up!"
+					icon: "img/alarm.png"
 				@notification.onclick = @notification.onclose = => @reset()
 			else
 				alert "Hey! The timer's up!"
