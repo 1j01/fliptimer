@@ -3,18 +3,42 @@
 <title>Countdown</title>
 <meta name="viewport" content="width=device-width">
 <style>
-	html, body, .timer, .time {
+	html,
+	body,
+	.timer,
+	.timer > center,
+	.time {
 		padding: 0;
 		margin: 0;
 		border: 0;
 		width: 100%;
 		height: 100%;
 		vertical-align: bottom;
+		font-size: 100%;
+		font: inherit;
+	}
+	.timer {
+		font-size: 5em;
+	}
+	.timer.running .input {
+		display: none;
+	}
+	.timer:not(.running) .countdown { 
+		display: none;
+	}
+	center {
+		display: table;
+	}
+	center > * {
+		display: table-cell;
+		vertical-align: middle;
+		text-align: center;
 	}
 	.time {
+		vertical-align: middle;
 		text-align: center;
-		font-size: 5em;
 		font-family: sans-serif;
+		font-size: inherit;
 		border: 0;
 		resize: none;
 		background: inherit;
@@ -60,11 +84,44 @@
 		0% { text-shadow: 0 0 0px yellow; }
 		100% { text-shadow: 0 0 300px rgba(255, 255, 0, 0); }
 	}
+	/** {
+		box-sizing: border-box;
+	}*/
+	.flipper {
+		display: inline-block;
+		margin: 0.1em;
+	}
+	.added {
+		-webkit-animation: added 0.2s ease-out;
+	}
+	.removed {
+		-webkit-animation: removed 0.2s ease-out;
+		opacity: 0;
+	}
+	@-webkit-keyframes added {
+		0% { -webkit-transform: perspective(300px) translateZ(5px) rotateX(0.25turn); opacity: 0; }
+		100% { -webkit-transform: perspective(300px) rotateX(0turn); opacity: 1; }
+	}
+	@-webkit-keyframes removed {
+		0% { -webkit-transform: perspective(300px) rotateX(0turn); opacity: 1; }
+		100% { -webkit-transform: perspective(300px) rotateX(0.25turn); opacity: 0; }
+	}
+	.numerical.flipper {
+		border: 0.05em solid #58297D;
+		border-radius: 0.1em;
+		padding: 0.1em;
+		/*border-radius: 2px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+		background: rgba(0, 0, 0, 0.01);
+		color: #58297D;*/
+	}
 </style>
 
 <script src="lib/jquery-2.1.3.min.js"></script>
 <script src="lib/juration.js"></script>
 <script src="lib/coffee-script.js"></script>
+
+<script src="flippers.coffee" type="text/coffeescript"></script>
 
 <script type="text/coffeescript">
 	
@@ -77,11 +134,11 @@
 	
 	class Countdown
 		constructor: ->
-			every 150, =>
-				status = if @interval then "running" else if @paused then "paused" else "stopped"
-				console.info "Status: #{status}, elapsed: #{@elapsed_seconds}s / #{@total_seconds}s"
-				if @paused and @interval
-					console.warn "Paused while running!"
+			# every 150, =>
+			# 	status = if @interval then "running" else if @paused then "paused" else "stopped"
+			# 	console.info "Status: #{status}, elapsed: #{@elapsed_seconds}s / #{@total_seconds}s"
+			# 	if @paused and @interval
+			# 		console.warn "Paused while running!"
 			
 			@total_seconds = 0
 			@elapsed_seconds = 0
@@ -90,25 +147,37 @@
 			@audio = new Audio
 			@audio.src = "audio/breeeewrrwrrrrhrrmnyarrerew.mp3"
 			
-			@el = ($ "<div class=timer>").appendTo "body"
+			@el = ($ "<div class='timer'>").appendTo "body"
+			center = ($ "<center>").appendTo @el
 			#@input = ($ "<textarea rows=1 class=time>").appendTo @el
-			@input = ($ "<input class=time>").appendTo @el
+			@input = ($ "<input class='time input'>").appendTo center
 			@input.focus()
+			@countdown = ($ "<div class='time countdown'>").appendTo center
+			
+			do resize = =>
+				@el.css fontSize: @el.width() / 10
+			
+			($ window).on "resize", resize
 			
 			($ window).on "keydown", (e)=>
 				debug e.keyCode
 				unless document.activeElement.tagName.match /input|textarea/i
 					debug "(no textarea active)"
-					if e.keyCode in [13, 32] # enter, space
-						if @paused or @elapsed_seconds is 0
+					switch e.keyCode
+						when 13, 32 # enter, space
+							if @paused or @elapsed_seconds is 0
+								if @isTimeUp()
+									@reset()
+								else
+									@start()
+							else
+								@pause()
+						when 8 # backspace
 							if @isTimeUp()
 								@reset()
 							else
-								@start()
-						else
-							@pause()
-					if e.keyCode in [8] # backspace
-						@input.focus()
+								@pause()
+							@input.focus()
 			
 			@input.on "keydown", (e)=>
 				return if e.ctrlKey or e.altKey or e.shiftKey
@@ -122,18 +191,23 @@
 					e.preventDefault()
 					unless was_running
 						total_time = @input.val() ? location.hash
-						try
-							@set total_time
-							@start()
-							location.hash = total_time
-						catch e
-							@el.addClass "error"
-							console?.error? e
+						if total_time is "0" and location.hash isnt "0"
+							@reset()
+							# after 60, =>
+							# 	@input.focus()
+						else
+							try
+								@set total_time
+								@start()
+								location.hash = total_time
+							catch e
+								@el.addClass "error"
+								console?.error? e
 		
 		update: ->
 			text = juration.stringify @total_seconds - @elapsed_seconds
+			@countdown.flippers text
 			@input.val text
-			@input.css fontSize: @el.width() / 10
 		
 		set: (total_time)->
 			@stop()
@@ -148,12 +222,7 @@
 			
 			@update()
 			
-			@input.blur()
-			@input.on "focus", (e)=>
-				if @isTimeUp()
-					@reset()
-				else
-					@pause()
+			# @input.blur()
 					
 			Notification.requestPermission()
 			@stop_alarm()
@@ -185,6 +254,7 @@
 		
 		reset: ->
 			@set location.hash
+			@input.focus()
 		
 		alarm: ->
 			@stop()
