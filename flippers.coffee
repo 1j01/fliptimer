@@ -31,12 +31,10 @@ do ($ = jQuery)->
 			
 			# Remove non-matching flippers
 			$old_flippers.not($matched_flippers).each (i, flipper)->
+				after 2000, -> $flipper.remove()
 				$flipper = $(flipper)
 					.removeClass "added"
 					.addClass "removed"
-				
-				after 2000, ->
-					$flipper.remove()
 			
 			# Add new flippers
 			$current_flippers = for part, i in parts
@@ -63,9 +61,21 @@ do ($ = jQuery)->
 					
 				$current_flipper
 			
+			
 			# Update the layout
+			
+			copy_position = ({$from, $to, include_margin})->
+				$to.css
+					left: $from.offset().left + if include_margin then $from.css("margin-left") else 0
+					top: $from.offset().top + if include_margin then $from.css("margin-top") else 0
+					width: $from.width()
+					height: $from.height()
+					position: "absolute"
+			
 			# @TODO: also relayout removed flippers
-			$layout = $(@cloneNode(no)).insertBefore(@)
+			$layout = $(@cloneNode(no))
+				.addClass("layout-flippers")
+				.insertBefore(@)
 			
 			$layed_out_flippers = for part, i in parts
 				$Flipper(part).appendTo($layout)
@@ -73,23 +83,14 @@ do ($ = jQuery)->
 			for part, i in parts
 				$flipper = $current_flippers[i]
 				$layed_out_flipper = $layed_out_flippers[i]
+				
 				console.error $flipper.text(), $layed_out_flipper.text() if $flipper.text() isnt $layed_out_flipper.text()
 				# @TODO: allow transitions to occur uninterrupted by checking to see if it needs to move before moving it?
-				position = (terrible_ox_hax=0)->
-					# @TODO: remove utter hackery
-					# @FIXME: hack only works with margin-left
-					$flipper.css
-						left: $layed_out_flipper.position().left + terrible_ox_hax
-						top: $layed_out_flipper.position().top
-						width: $layed_out_flipper.width()
-						height: $layed_out_flipper.height()
-					.css
-						position: "absolute"
-					
+				
 				if $flipper.hasClass "just-added"
 					$flipper.removeClass "just-added"
-					position($layed_out_flipper.outerWidth()/2+$layed_out_flipper.css("margin-left"))
+					copy_position $from: $layed_out_flipper, $to: $flipper, include_margin: yes
 				
-				position()
+				copy_position $from: $layed_out_flipper, $to: $flipper
 			
 			$layout.remove()
