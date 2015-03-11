@@ -2,21 +2,9 @@
 .flipper {
 	display: inline-block;
 	margin: 0.1em;
-	
-	-webkit-perspective: 300px;
-	   -moz-perspective: 300px;
-	    -ms-perspective: 300px;
-	        perspective: 300px;
-	
-	-webkit-perspective-origin: 50% 50%;
-	   -moz-perspective-origin: 50% 50%;
-	    -ms-perspective-origin: 50% 50%;
-	        perspective-origin: 50% 50%;
-	
 	transition-property: left, top, opacity;
 	transition-timing-function: ease;
 	transition-duration: .7s;
-	
 }
 .flipper.added {
 	-webkit-animation: added 0.4s ease-out;
@@ -28,6 +16,7 @@
 	-webkit-animation-fill-mode: forwards;
 	-webkit-transform-origin: 50% -50%;
 	opacity: 0;
+	pointer-events: none;
 }
 @-webkit-keyframes added {
 	0% { -webkit-transform: translateZ(-40px) rotateX(0.25turn); opacity: 0; }
@@ -36,16 +25,6 @@
 @-webkit-keyframes removed {
 	0% { -webkit-transform: translateZ(-40px) rotateX(0turn); opacity: 1; }
 	100% { -webkit-transform: translateZ(-40px) rotateX(0.25turn); opacity: 0; }
-}
-.flipper.numerical {
-	background: rgba(50, 0, 150, 0.05);
-	border: 0.05em solid #58297D;
-	border-radius: 0.1em;
-	padding: 0.1em;
-	/*border-radius: 2px;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-	background: rgba(0, 0, 0, 0.01);
-	color: #58297D;*/
 }
 .layout-flippers,
 .layout-flippers * {

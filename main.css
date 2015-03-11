@@ -90,3 +90,29 @@ center > * {
 	0% { text-shadow: 0 0 0px yellow; }
 	100% { text-shadow: 0 0 300px rgba(255, 255, 0, 0); }
 }
+.countdown {
+	-webkit-perspective: 1000px;
+	-moz-perspective: 1000px;
+	-ms-perspective: 1000px;
+	perspective: 1000px;
+
+	-webkit-perspective-origin: 50% 50%;
+	-moz-perspective-origin: 50% 50%;
+	-ms-perspective-origin: 50% 50%;
+	perspective-origin: 50% 50%;
+
+	-webkit-transform-style: preserve-3d;
+	-moz-transform-style: preserve-3d;
+	-ms-transform-style: preserve-3d;
+	transform-style: preserve-3d;
+}
+.flipper.numerical {
+	background: rgba(50, 0, 150, 0.05);
+	border: 0.05em solid #58297D;
+	border-radius: 0.1em;
+	padding: 0.1em;
+	/*border-radius: 2px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+	background: rgba(0, 0, 0, 0.01);
+	color: #58297D;*/
+}
