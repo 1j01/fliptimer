@@ -27,6 +27,9 @@
 	100% { -webkit-transform: translateZ(-40px) rotateX(0.25turn); opacity: 0; }
 }
 .layout-flippers,
-.layout-flippers * {
+.layout-flippers *,
+.just-added {
 	transition: none !important;
+	-webkit-transition: none !important;
+	-webkit-transition-property: none !important;
 }

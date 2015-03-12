@@ -77,6 +77,9 @@ do ($ = jQuery)->
 				.addClass("layout-flippers")
 				.insertBefore(@)
 			
+			if $layout.is ":hidden"
+				$layout.show()
+			
 			$layed_out_flippers = for part, i in parts
 				$Flipper(part).appendTo($layout)
 			
@@ -88,8 +91,8 @@ do ($ = jQuery)->
 				# @TODO: allow transitions to occur uninterrupted by checking to see if it needs to move before moving it?
 				
 				if $flipper.hasClass "just-added"
-					$flipper.removeClass "just-added"
 					copy_position $from: $layed_out_flipper, $to: $flipper, include_margin: yes
+					$flipper.removeClass "just-added"
 				
 				copy_position $from: $layed_out_flipper, $to: $flipper
 			
