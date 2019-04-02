@@ -30,7 +30,7 @@ center {
 	display: table;
 }
 center > * {
-	display: table-cell;
+	/*display: table-cell;*/
 	vertical-align: middle;
 	text-align: center;
 }
@@ -111,9 +111,9 @@ center > * {
 }
 .flipper.numerical {
 	background: rgba(50, 0, 150, 0.05);
-	border: 0.05em solid #58297D;
+	/*border: 0.05em solid #58297D;*/
 	border-radius: 0.1em;
-	padding: 0.1em;
+	/*padding: 0.1em;*/
 	/*border-radius: 2px;
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 	background: rgba(0, 0, 0, 0.01);

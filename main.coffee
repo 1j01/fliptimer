@@ -103,7 +103,7 @@ class Countdown
 		debug "START!"
 		started_seconds = @elapsed_seconds
 		started_time = Date.now()
-		@interval = every 30, =>
+		@interval = every 300, =>
 			@elapsed_seconds = (Date.now() - started_time) / 1000 + started_seconds
 			if @elapsed_seconds >= @total_seconds
 				@alarm()
