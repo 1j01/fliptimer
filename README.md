@@ -1,4 +1,4 @@
-# [countdown.ml](http://countdown.ml)
+# [fliptimer](https://1j01.github.io/fliptimer/)
 A simple countdown timer.
 Just enter an amount of time and press <kbd>Enter</kbd>.
 
